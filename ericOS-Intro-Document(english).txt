@@ -1,0 +1,83 @@
+***************ericOS-Intro-Document*************
+Welcome to the introduction of ericOS.
+				---by Eric
+
+******some requirements************
+Building & testing environment: win7(32-bit) or windows XP3 (32-bit)  (have tested)
+Software requirement : VMare Player (have tested, as virutal machine to run the ericOS)
+
+************HOW TO BUILD & START*********
+1.unzip ericOS-Project
+2.enter .\ericOS-Project
+3.run or double-click onekeyBuild.bat
+4.after a few seconds(based on your machine),it will pop up a winImage window ,just click "OK" button.
+5.If nothing goes wrong, you will find builtBoot.img in .\ericOS-Project\
+6.Open VMare Player, create a new Virtual Machine(if any problems, consult VMare Player's Help) ,
+and just set .\ericOS-Project\builtBoot.img as floppy image file, and boot the Virtual Machine with it.
+7.If everything is OK, you shall see some string like: kernel start...  and enter the command line: unknow>_
+8.Just play freely with ericOS, for help, simply type ?<ENTER>
+
+(tips: if the building process can't run incorrectly, try to kill winimage.exe process or restart computer to try again.)
+
+***********ABOUT THE COMMAND LINE********
+---Overview:
+login:                Login as root.(username:"eric" password:"lin")
+1/start:              ContinueTimer
+launch <file>/<file>: launch a process loaded with <file>.
+                        (currectly <file> must in rootDir)
+realRun:              Actually run the OS, without entering
+2/printPCBs:          Show all process info.
+ls:                   list all files in current directory.
+cd <dir>:             change to a directory. 
+pwd:                  print working directory.
+5/lsroot:             List all files in root directory.
+7 <num>:              set maxScheduleCount=<num>.
+8:                    switch to debug/nodebug mode.
+hello:                a hello message.
+help/? :              print this help message.
+showSector <num>:     show the content in <num>th sector .
+dump <seg> <offset> <num> :dump the memory in <seg>:<offset> with <num> bytes.
+                       (A very powerful tool for debugging,i use it a lot.)
+                      e.g. dump 0 0x7c00 512
+                      You will see the \"55 AA\" in the left-bottom corner.
+printmem:              View the usage of memory.
+game:                 A simple game.
+
+---Useful function base on these cmds:
+To login: login.(attention:the one and only one valid user:pass pair is eric:lin.)
+To launch a process:simply type the fileName.(the length of fileName should <11,and not conflict with built-in cmd)
+To list all files in current directory: ls
+To print working directory:pwd
+To play games:game
+To view the current state of memory allocation
+To dump the memory :dump <seg> <offset> <num>
+To actually run the OS:realRun //however, please launch the some in advance, like your shell program, or like the test program a.bin
+To get the overview of cmd:help
+
+
+
+************Abou the architecture of ericOS*******
+It's currently split into 4 parts: filesystem,shell,io,process,memory.
+---filesystem: it's a simple FAT12 filesystem.It's implemented by C code, base on my understanding about the FAT12 structure.
+
+---memory: it use Buddy System to manange the memory. And the rang that it can manage is 0x10000 ~ 0x8ffff (linear address), i.e. a half of one mega bytes(0.5MB). Again, it is implemented by myself. 
+
+---io: Input and Output, i just use BIOS int10 to do the job.And use C to enhance the function provided by BIOS.
+
+---process: use one struct PCB in C to describe one process. 
+	To implement the scheduling, i use ASM to save or restore cpu registers.
+	 Actually, timer INT will save the necessary registers in
+	 current PCB first, then the control flow will enter actualSchdule() implemented by C, where you can determine which process will be exectued next i.e. to adapt some suitable schedule algorithm.
+
+---shell: actually this shell is used to debug, not the shell we normally talk about. It just a platform to test new function, to do some experiments or to debug your OS kernel. Of course, technically speaking, it is part of kernel. However, when you want to release the OS kernel, this shell should be removed. (Actually this part,i means shell, was originated from the frustration that when i run a newly built ericOS with some unkown error in VMware Player, the Virtaul Machine just cashed without giving me more helpful message, especially when you just start writting an OS from scratch.)
+
+
+
+************Others************
+All of C codes and most of ASM codes are written by myself(Eric).
+
+
+
+***************end ericOS-Intro-Document*************
+Eric's email: 463222898@qq.com
+				---by Eric
